@@ -18,16 +18,16 @@ type RandPacketT struct {
 }
     This struct holds the gorandpacket object
 
-*func NewGorandPacket() RandPacketT
+* func NewGorandPacket() RandPacketT
     Factory method for gorandpacket
 
-*func (r *RandPacketT) RandByte() byte
+* func (r *RandPacketT) RandByte() byte
     Generate a random byte
 
-*func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet
+* func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet
     Generate a random Ethernet layer
 
-func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer
+* func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer
     Generate a random ethernet packet. For now it only generates IPv2/TCP
     packets TODO: Generate more types/protocols
 
