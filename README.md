@@ -1,76 +1,119 @@
 # gorandpacket
-This library provides capabilities for random network frames in the Go programming language. It aims to create an extensible, easy-to-use, easy-to-expand library that's still relatively fast.
-
-##PACKAGE DOCUMENTATION
-
-###package gorandpacket
+--
     import "github.com/lagarciag/gorandpacket"
 
-    Gorandpacket is a go library for randomly generating ethernet packets
-    It's main purpose is for testing networking software/hardware
+Gorandpacket is a go library for randomly generating ethernet packets It's main
+purpose if for testing networking software/hardware
 
-TYPES
+## Usage
 
+#### type RandPacketT
+
+```go
 type RandPacketT struct {
-    MACLen int
-    Seed   int64
-    Rand   *rand.Rand
+	MACLen int
+	Seed   int64
+	Rand   *rand.Rand
 }
-    This struct holds the gorandpacket object
+```
 
-* func NewGorandPacket() RandPacketT
+RandPacket struct holds the gorandpacket object
 
-    Factory method for gorandpacket
+#### func  NewGorandPacket
 
-* func (r *RandPacketT) RandByte() byte
+```go
+func NewGorandPacket() RandPacketT
+```
+NewGorandPacket Factory method for gorandpacket
 
-    Generate a random byte
+#### func (*RandPacketT) RandByte
 
-* func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet
+```go
+func (r *RandPacketT) RandByte() byte
+```
+RandByte Generate a random byte
 
-    Generate a random Ethernet layer
+#### func (*RandPacketT) RandEthernetLayer
 
-* func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer
+```go
+func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet
+```
+RandEthernetLayer generates a random Ethernet layer
 
-    Generate a random ethernet packet. For now it only generates IPv2/TCP
-    packets TODO: Generate more types/protocols
+#### func (*RandPacketT) RandEthernetPacket
 
-* func (r *RandPacketT) RandIPv4Addr() net.IP
+```go
+func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer
+```
+RandEthernetPacket generates a random ethernet packet. For now it only generates
+IPv2/TCP packets TODO: Generate more types/protocols
 
-    Generate a random IPv4 address
+#### func (*RandPacketT) RandIPv4Addr
 
-* func (r *RandPacketT) RandIPv4Layer() *layers.IPv4
+```go
+func (r *RandPacketT) RandIPv4Addr() net.IP
+```
+RandIPv4Addr generates a random IPv4 address
 
-    Generate a random IPv4 layer
+#### func (*RandPacketT) RandIPv4Layer
 
-* func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP
+```go
+func (r *RandPacketT) RandIPv4Layer() *layers.IPv4
+```
+RandIPv4Layer generates a random IPv4 layer
 
-    Generate a random TCP layer
+#### func (*RandPacketT) RandIPv4TCPLayer
 
-* func (r *RandPacketT) RandIPv6Addr() net.IP
+```go
+func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP
+```
+RandIPv4TCPLayer generates a random TCP layer
 
-    Generate a random IPv6 address
+#### func (*RandPacketT) RandIPv6Addr
 
-* func (r *RandPacketT) RandInt(n int) int
+```go
+func (r *RandPacketT) RandIPv6Addr() net.IP
+```
+RandIPv6Addr Generate a random IPv6 address
 
-* func (r *RandPacketT) RandInt16() uint16
+#### func (*RandPacketT) RandInt
 
-    Generate random uint16
+```go
+func (r *RandPacketT) RandInt(n int) int
+```
+RandInt generates a random int
 
-* func (r *RandPacketT) RandInt32() uint32
+#### func (*RandPacketT) RandInt16
 
-    Generate random uint32
+```go
+func (r *RandPacketT) RandInt16() uint16
+```
+RandInt16 generates random uint16
 
-* func (r *RandPacketT) RandMACAddr() net.HardwareAddr
+#### func (*RandPacketT) RandInt32
 
-    Generate a random MAC address
+```go
+func (r *RandPacketT) RandInt32() uint32
+```
+RandInt32 generates random uint32
 
-* func (r *RandPacketT) RandPayload() []byte
+#### func (*RandPacketT) RandMACAddr
 
-    Generate Random Payload
+```go
+func (r *RandPacketT) RandMACAddr() net.HardwareAddr
+```
+RandMACAddr Generate a random MAC address
 
-* func (r *RandPacketT) SetSeed(s int64)
+#### func (*RandPacketT) RandPayload
 
-    Set a seed from an external source
+```go
+func (r *RandPacketT) RandPayload() []byte
+```
+RandPayload generates a Random Payload
 
+#### func (*RandPacketT) SetSeed
 
+```go
+func (r *RandPacketT) SetSeed(s int64)
+```
+SetSeed Set a seed from an external source
