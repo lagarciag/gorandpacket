@@ -1,6 +1,5 @@
-/*
-Gorandpacket is a go library for randomly generating ethernet packets
-It's main purpose if for testing networking software/hardware 
+/*Package gorandpacket is a go library for randomly generating ethernet packets
+It's main purpose is for testing networking software/hardware 
 */
 package gorandpacket
 
@@ -12,13 +11,13 @@ import (
 	"code.google.com/p/gopacket"
 )
 
-//This struct holds the gorandpacket object
+//Struct RandPacket holds the gorandpacket object
 type RandPacketT struct {
 	MACLen int
 	Seed   int64
 	Rand   *rand.Rand
 }
-//Factory method for gorandpacket
+//NewGorandPacket Factory method for gorandpacket
 func NewGorandPacket() RandPacketT {
 
 	rp := RandPacketT{}
@@ -29,7 +28,7 @@ func NewGorandPacket() RandPacketT {
 
 }
 
-//Generate a random IPv4 address
+//RandIPv4Addr generates a random IPv4 address
 func (r *RandPacketT) RandIPv4Addr() net.IP {
 	var myIP net.IP
 	myIP = make(net.IP, net.IPv4len)
@@ -40,7 +39,7 @@ func (r *RandPacketT) RandIPv4Addr() net.IP {
 	return myIP
 }
 
-//Generate a random IPv6 address
+//RandIPv6Addr Generate a random IPv6 address
 func (r *RandPacketT) RandIPv6Addr() net.IP {
 	var myIP net.IP
 	myIP = make(net.IP, net.IPv6len)
@@ -51,7 +50,7 @@ func (r *RandPacketT) RandIPv6Addr() net.IP {
 	return myIP
 }
 
-//Generate a random MAC address
+//RandMACAddr Generate a random MAC address
 func (r *RandPacketT) RandMACAddr() net.HardwareAddr {
 
 	var myMAC net.HardwareAddr
@@ -62,21 +61,21 @@ func (r *RandPacketT) RandMACAddr() net.HardwareAddr {
 	return myMAC
 
 }
-//Set a seed from an external source
+//SetSeed Set a seed from an external source
 func (r *RandPacketT) SetSeed(s int64) {
 
 	r.Seed = s
 
 }
 
-//Generate random uint16
+//RandInt16 generates random uint16
 func (r *RandPacketT) RandInt16() uint16 {
 	num := r.Rand.Intn(0xFFFF)
 	num16 := uint16(num)
 	return num16
 }
 
-//Generate random uint32
+//RandInt32 generates random uint32
 func (r *RandPacketT) RandInt32() uint32 {
 
 	num := r.Rand.Intn(0xFFFFFFFF)
@@ -84,7 +83,7 @@ func (r *RandPacketT) RandInt32() uint32 {
 	return num32
 }
 
-//Generate a random byte
+//RandByte Generate a random byte
 func (r *RandPacketT) RandByte() byte {
 
 	num := r.Rand.Intn(255)
@@ -92,11 +91,12 @@ func (r *RandPacketT) RandByte() byte {
 
 	return mByte
 }
+//RandInt generates a random int
 func (r *RandPacketT) RandInt(n int) int {
 	return r.Rand.Intn(n)
 }
 
-//Generate Random Payload
+//RandPayload generates a Random Payload
 func (r *RandPacketT) RandPayload() []byte {
 
 	pSize := r.RandInt(1000)
@@ -112,7 +112,7 @@ func (r *RandPacketT) RandPayload() []byte {
 	return myPayload
 
 }
-//Generate a random IPv4 layer
+//RandIPv4Layer generates a random IPv4 layer
 func (r *RandPacketT) RandIPv4Layer() *layers.IPv4 {
 
 	ipv4 := layers.IPv4{
@@ -132,7 +132,7 @@ func (r *RandPacketT) RandIPv4Layer() *layers.IPv4 {
 	return &ipv4
 }
 
-//Generate a random TCP layer
+//RandIPv4TCPLayer generates a random TCP layer
 func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP {
 
 	ipv4Tcp := layers.TCP{
@@ -157,7 +157,7 @@ func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP {
 	return &ipv4Tcp
 
 }
-//Generate a random Ethernet layer
+//RandEthernetLayer generates a random Ethernet layer
 func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet {
 	eth := layers.Ethernet{}
 	eth.EthernetType = layers.EthernetTypeIPv4
@@ -166,9 +166,8 @@ func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet {
 	return &eth
 
 }
-/*
-Generate a random ethernet packet.
-For now it only generates IPv2/TCP packets
+/*RandEthernetPacket generates a random ethernet packet.
+For now it only generates IPv4/TCP packets
 TODO:  Generate more types/protocols
 */
 func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer {
@@ -200,4 +199,3 @@ func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer {
 	return buf
 	
 }
-
