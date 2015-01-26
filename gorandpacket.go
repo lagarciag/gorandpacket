@@ -1,14 +1,15 @@
 /*Package gorandpacket is a go library for randomly generating ethernet packets
-It's main purpose is for testing networking software/hardware 
+It's main purpose is for testing networking software/hardware
 */
 package gorandpacket
 
 import (
+	"code.google.com/p/gopacket"
 	"code.google.com/p/gopacket/layers"
+	//"fmt"
 	"math/rand"
 	"net"
 	"time"
-	"code.google.com/p/gopacket"
 )
 
 //Struct RandPacket holds the gorandpacket object
@@ -17,6 +18,7 @@ type RandPacketT struct {
 	Seed   int64
 	Rand   *rand.Rand
 }
+
 //NewGorandPacket Factory method for gorandpacket
 func NewGorandPacket() RandPacketT {
 
@@ -61,6 +63,7 @@ func (r *RandPacketT) RandMACAddr() net.HardwareAddr {
 	return myMAC
 
 }
+
 //SetSeed Set a seed from an external source
 func (r *RandPacketT) SetSeed(s int64) {
 
@@ -91,6 +94,7 @@ func (r *RandPacketT) RandByte() byte {
 
 	return mByte
 }
+
 //RandInt generates a random int
 func (r *RandPacketT) RandInt(n int) int {
 	return r.Rand.Intn(n)
@@ -106,25 +110,38 @@ func (r *RandPacketT) RandPayload() []byte {
 
 	for i := 5; i < int(pSize); i++ {
 		myPayload[i] = r.RandByte()
-		println(myPayload[i])
+		//println(myPayload[i])
 
 	}
 	return myPayload
 
 }
+
 //RandIPv4Layer generates a random IPv4 layer
 func (r *RandPacketT) RandIPv4Layer() *layers.IPv4 {
+	const (
+		l3tcp = iota // c0 == 0
+		l3udp = iota // c1 == 1
+	)
+	var l3protocol uint8
+	//Randomly choose the l3 protocol to be used
+	switch r.Rand.Intn(2) {
+	case l3tcp:
+		l3protocol = uint8(layers.IPProtocolTCP)
+	case l3udp:
+		l3protocol = uint8(layers.IPProtocolUDP)
+	}
 
 	ipv4 := layers.IPv4{
 		Version:    uint8(4),
 		IHL:        uint8(5),
 		TOS:        uint8(0x1),
 		Length:     uint16(40),
-		Id:         uint16(0xFFFF),
+		Id:         uint16(r.RandInt16()),
 		Flags:      layers.IPv4Flag(0),
 		FragOffset: uint16(0),
 		TTL:        uint8(0x1),
-		Protocol:   layers.IPProtocolTCP,
+		Protocol:   layers.IPProtocol(l3protocol),
 		Checksum:   uint16(0),
 		SrcIP:      r.RandIPv4Addr(),
 		DstIP:      r.RandIPv4Addr(),
@@ -132,8 +149,20 @@ func (r *RandPacketT) RandIPv4Layer() *layers.IPv4 {
 	return &ipv4
 }
 
+//RandIPUDP generates a random UDP layer
+func (r *RandPacketT) RandIPUDPLayer() *layers.UDP {
+
+	udp := layers.UDP{
+		SrcPort:  layers.UDPPort(r.RandInt16()),
+		DstPort:  layers.UDPPort(r.RandInt16()),
+		Length:   8,
+		Checksum: 0,
+	}
+	return &udp
+}
+
 //RandIPv4TCPLayer generates a random TCP layer
-func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP {
+func (r *RandPacketT) RandIPTCPLayer() *layers.TCP {
 
 	ipv4Tcp := layers.TCP{
 		SrcPort:    layers.TCPPort(r.RandInt16()), //uint16
@@ -157,6 +186,7 @@ func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP {
 	return &ipv4Tcp
 
 }
+
 //RandEthernetLayer generates a random Ethernet layer
 func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet {
 	eth := layers.Ethernet{}
@@ -166,36 +196,66 @@ func (r *RandPacketT) RandEthernetLayer() *layers.Ethernet {
 	return &eth
 
 }
+
+//RandL3Layer generates a random L3 layer:  currently supports TCP & UDP only.
+func (r *RandPacketT) RandL3Layer(l3type layers.IPProtocol) gopacket.SerializableLayer {
+
+	var l3 gopacket.SerializableLayer
+
+	/*********************
+	Create a Random L3 layer
+	**********************/
+	switch l3type {
+	case layers.IPProtocolTCP:
+		// Generate a random TCP layer
+		l3 = r.RandIPTCPLayer()
+	case layers.IPProtocolUDP:
+		//Generate a random UDP layer
+		l3 = r.RandIPUDPLayer()
+	default:
+		panic("Bad l3 packet type")
+	}
+	return l3
+}
+
 /*RandEthernetPacket generates a random ethernet packet.
 For now it only generates IPv4/TCP packets
 TODO:  Generate more types/protocols
 */
 func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer {
-	
+
 	buf := gopacket.NewSerializeBuffer()
-	
+
 	// See gopacket SerializeOptions for more details.
 	opts := gopacket.SerializeOptions{}
-	
+
 	// Generate a random ethernet layer
 	eth := r.RandEthernetLayer()
-	
+
 	// Generate a random IPV4 Layer
 	//TODO: randomize ip version
-	ipv4 :=  r.RandIPv4Layer()
-	
-	// Generate a random TCP layer
-	ipv4Tcp := r.RandIPv4TCPLayer()
-	
-	//Serilize layers.
-	err := gopacket.SerializeLayers(buf, opts,eth,ipv4,ipv4Tcp,
-		gopacket.Payload(r.RandPayload()),
-	) 
-	
+	l3 := r.RandIPv4Layer()
+
+	//Generate a random IP L4 layer.
+	l4 := r.RandL3Layer(l3.Protocol)
+
+	/*****************************
+	Check IP layer size
+	******************************/
+	l3Buf := gopacket.NewSerializeBuffer()
+	l4Buf := gopacket.NewSerializeBuffer()
+	err := l3.SerializeTo(l3Buf, opts)
+	err = l4.SerializeTo(l4Buf, opts)
+
+	l3.Length = uint16(len(l3Buf.Bytes())) + uint16(len(l4Buf.Bytes()))
+	/*****************************
+	Generate the final ethernet frame
+	by serializing all generated layers
+	*****************************/
+	err = gopacket.SerializeLayers(buf, opts, eth, l3, l4)
+	//fmt.Println(buf)
 	if err != nil {
 		panic(err)
 	}
-	
 	return buf
-	
 }
