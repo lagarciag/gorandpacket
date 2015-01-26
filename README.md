@@ -48,6 +48,20 @@ func (r *RandPacketT) RandEthernetPacket() gopacket.SerializeBuffer
 RandEthernetPacket generates a random ethernet packet. For now it only generates
 IPv4/TCP packets TODO: Generate more types/protocols
 
+#### func (*RandPacketT) RandIPTCPLayer
+
+```go
+func (r *RandPacketT) RandIPTCPLayer() *layers.TCP
+```
+RandIPv4TCPLayer generates a random TCP layer
+
+#### func (*RandPacketT) RandIPUDPLayer
+
+```go
+func (r *RandPacketT) RandIPUDPLayer() *layers.UDP
+```
+RandIPUDP generates a random UDP layer
+
 #### func (*RandPacketT) RandIPv4Addr
 
 ```go
@@ -61,13 +75,6 @@ RandIPv4Addr generates a random IPv4 address
 func (r *RandPacketT) RandIPv4Layer() *layers.IPv4
 ```
 RandIPv4Layer generates a random IPv4 layer
-
-#### func (*RandPacketT) RandIPv4TCPLayer
-
-```go
-func (r *RandPacketT) RandIPv4TCPLayer() *layers.TCP
-```
-RandIPv4TCPLayer generates a random TCP layer
 
 #### func (*RandPacketT) RandIPv6Addr
 
@@ -96,6 +103,13 @@ RandInt16 generates random uint16
 func (r *RandPacketT) RandInt32() uint32
 ```
 RandInt32 generates random uint32
+
+#### func (*RandPacketT) RandL3Layer
+
+```go
+func (r *RandPacketT) RandL3Layer(l3type layers.IPProtocol) gopacket.SerializableLayer
+```
+RandL3Layer generates a random L3 layer: currently supports TCP & UDP only.
 
 #### func (*RandPacketT) RandMACAddr
 
