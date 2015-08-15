@@ -4,9 +4,8 @@ It's main purpose is for testing networking software/hardware
 package gorandpacket
 
 import (
-	"code.google.com/p/gopacket"
-	"code.google.com/p/gopacket/layers"
-	//"fmt"
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
 	"math/rand"
 	"net"
 	"time"
